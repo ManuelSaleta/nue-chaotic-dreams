@@ -13,6 +13,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --watch=false",
     "type-check": "tsc -p tsconfig.app.json --noEmit",
+    "lint": "tsc -p tsconfig.app.json --noEmit && prettier --check \"src/**/*.{ts,html,scss,json}\"",
     "format": "prettier --write \"src/**/*.{ts,html,scss,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\"",
     "prepare": "cd .. && husky web/.husky"
