@@ -1,136 +1,100 @@
-# Vue Resume Site
+# Nue Chaotic Dreams
 
-A modern, responsive resume website built with Vue.js and Vuetify.
+A modern, high-performance, and self-hosted personal portfolio, creative writing gallery, and digital goods platform built with **Angular 22+** and **.NET 10**.
 
-- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
-- **Resume Download** - Built-in button to download your resume as PDF
-- **Skills Showcase** - Display your technical and professional skills with organized chips
-- **Social Media Links** - Easy integration of social media profiles
-- **JSON-Driven Content** - Manage your resume and skills data via JSON files
-- **Modern UI** - Clean, professional design powered by Vuetify
+## Architecture & Monorepo Layout
 
-## Tech Stack
-
-- **Vue.js 3** - Progressive JavaScript framework
-- **TypeScript** - Type-safe development
-- **Vuetify** - Material Design UI components
-- **Vite** - Fast build tool and dev server
-- **Pinia** - State management
-- **Vue Router** - Client-side routing
-
-## Project Structure
-
-```
-src/
-├── components/        # Reusable Vue components
-├── pages/            # Page components (routes)
-├── layouts/          # Layout wrapper components
-├── stores/           # Pinia state management
-├── router/           # Vue Router configuration
-├── plugins/          # Vue plugins (Vuetify, etc.)
-├── assets/           # Static assets and data files
-│   ├── resume.json   # Resume content data
-│   └── skills.json   # Skills data
-└── styles/           # Global styles and SCSS settings
-```
+- **`web/`**: Angular 22+ (Zoneless, Signals-first, Standalone components), Angular Material (M3) encapsulated via `@ui`, Storybook (`@storybook/angular`), and single global SCSS tokens.
+- **`api/`**: .NET 10 Modular-Monolith Minimal API (`NueChaoticDreams.sln`), Entity Framework Core 10 + PostgreSQL 17 (`Npgsql`), build-time OpenAPI 3.1 specification, and transactional outbox.
+- **`compose.yaml`**: Full-stack Docker Compose orchestration (`web`, `api`, `postgres:17-alpine`, `mailpit`).
+- **`Makefile`**: Symmetrical developer commands for both Native Local and Docker Compose execution.
 
 ## Getting Started
 
-### Installation
+### Prerequisites
+
+- **Node.js**: v22+ (or Node 24 LTS via `.nvmrc`)
+- **.NET SDK**: 10.0+
+- **Docker & Docker Compose**: v2.20+
+
+### Development Commands
+
+Run `make help` to inspect all available workflow targets:
 
 ```bash
-pnpm install
-```
-
-### Development
-
-```bash
-pnpm dev
-```
-
-Starts the dev server at `http://localhost:5173`
-
-### Build
-
-```bash
-pnpm build
-```
-
-Generates optimized production build in the `dist/` directory
-
-## Configuration
-
-### Resume Data
-
-Edit `src/assets/resume.json` to update your resume content including work experience, education, and achievements.
-
-### Skills
-
-Edit `src/assets/skills.json` to manage your technical and professional skills displayed on the site.
-
-### Styling
-
-Customize the site appearance in `src/styles/settings.scss` to match your personal brand.
-
-## Components
-
-- **SiteBase** - Main layout wrapper
-- **SiteNavigation** - Navigation bar
-- **ResumeBase** - Resume section container
-- **ResumeSection** - Individual resume sections
-- **SkillsList** - Skills display component
-- **SkillChip** - Individual skill badge
-- **AboutMe** - About section
-- **SocialMedia** - Social media links
-- **ResumeDownloadBtn** - PDF download button
-
-// ...existing code...
-
-## Available Commands
-
-This project uses a Makefile for convenient command execution. Run `make help` to see all available commands.
-
-### Common Commands
-
-```bash
-# Show all available commands
 make help
+```
 
-# Start development server
+#### Native Local Execution
+
+```bash
+# Start local PostgreSQL 17 and Mailpit
+make db
+
+# Start Angular 22+ frontend (http://localhost:4200)
+make web
+
+# Start .NET 10 Minimal API natively (http://localhost:5000 / http://localhost:8080)
+make api
+
+# Start full stack natively
 make dev
+```
 
-# Build production bundle
-make build
+#### Docker Compose Execution
 
-# Preview production build locally (opens in browser)
-make preview
+```bash
+# Start full stack in Docker (db + mailpit + web)
+make docker-up
 
-# Run linter
-make lint
+# Run frontend container only
+make docker-web
 
-# Format code
-make fmt
+# Run PostgreSQL 17 + Mailpit only
+make docker-db
 
-# Run tests
+# Gracefully stop running containers
+make docker-down
+
+# Reset PostgreSQL container and destroy database volume
+make docker-db-nuke
+
+# Nuke all project containers, volumes, networks, local images & orphans
+make docker-nuke
+```
+
+#### Code Quality & Codegen
+
+```bash
+# Run unit tests
 make test
 
-# Clean build artifacts and caches
+# Run linters and formatting checks
+make lint
+
+# Automatically format code
+make fmt
+
+# Build production bundles
+make build
+
+# Clean build artifacts and temporary caches
 make clean
+
+# Regenerate OpenAPI 3.1 spec and TypeScript client
+make openapi-regen
 ```
 
-### Node Version
+## Documentation & Architectural Specs
 
-The project uses Node.js v22. The `make dev` command automatically sets the correct Node version using nvm before starting the development server.
-
-To manually set the Node version:
-
-```bash
-make version
-```
+- [`plan.md`](plan.md): Full-stack execution plan and GitHub issue backlog
+- [`design.md`](design.md): Material Design 3 tokens, theme switching, and UI guidelines
+- [`AGENTS.md`](AGENTS.md): Coding rules, strict TypeScript, and .NET 10 standards
+- [`.agents/rules/`](.agents/rules/): Stack-specific best practices
 
 ## License
 
-[MIT license](https://mit-license.org)
+[MIT license](LICENSE)
 
 ## Author
 

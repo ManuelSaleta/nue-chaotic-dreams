@@ -17,7 +17,7 @@ export type ThemeMode = 'dark' | 'light';
 /**
  * LocalStorage key used to persist the user's preferred color theme.
  */
-export const THEME_STORAGE_KEY = 'personal-site-theme' as const;
+export const THEME_STORAGE_KEY = 'nue-chaotic-dreams-theme' as const;
 
 /**
  * Singleton Signal-based service managing Light and Dark Material 3 theme state.

@@ -8,7 +8,7 @@ You are an expert in .NET 10, C# 14, ASP.NET Core Minimal APIs, Modular-Monolith
 ## C# 14 & .NET 10 Language Best Practices
 
 - Enable `<Nullable>enable</Nullable>`, `<ImplicitUsings>enable</ImplicitUsings>`, and `<TreatWarningsAsErrors>true</TreatWarningsAsErrors>` across all projects via `$root/api/Directory.Build.props`.
-- Use file-scoped namespaces (`namespace PersonalSite.Api.Modules.Portfolio;`) everywhere.
+- Use file-scoped namespaces (`namespace NueChaoticDreams.Api.Modules.Portfolio;`) everywhere.
 - Use primary constructors for dependency injection in services, handlers, and background workers.
 - Use `record` or `readonly record struct` for immutable DTOs, requests, responses, and domain events.
 - Prefer pattern matching (`is`, `switch` expressions, property patterns) and collection expressions (`[...]`).
