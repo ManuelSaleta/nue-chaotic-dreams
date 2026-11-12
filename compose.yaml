@@ -1,0 +1,67 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: personal-site-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-personalsite}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-personalsite}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: personal-site-mailpit
+    restart: unless-stopped
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: dev
+    container_name: personal-site-web
+    restart: unless-stopped
+    ports:
+      - '4200:4200'
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+      target: dev
+    container_name: personal-site-api
+    restart: unless-stopped
+    ports:
+      - '5000:5000'
+      - '8080:8080'
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB:-personalsite};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    name: postgres_data
