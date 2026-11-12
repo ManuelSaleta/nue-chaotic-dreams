@@ -20,7 +20,7 @@ You are an expert in PostgreSQL 17+, Entity Framework Core 10, Npgsql, relationa
 - Project directly to read DTOs inside the database query (`.Select(e => new ProductDto(...))`) so EF Core selects only the required columns.
 - Avoid N+1 queries: use projection or `.AsSplitQuery()` when loading multiple one-to-many collections.
 - Use EF Core 10 `UseAsyncSeeding` / `UseSeeding` for deterministic, idempotent reference and catalog data seeding (`resume.json`, `skills.json`, initial digital products).
-- Keep all schema changes in version-controlled EF Core migrations (`$root/api/src/PersonalSite.Api/Data/Migrations/`). Never rely on `EnsureCreated()` against relational databases.
+- Keep all schema changes in version-controlled EF Core migrations (`$root/api/src/NueChaoticDreams.Api/Data/Migrations/`). Never rely on `EnsureCreated()` against relational databases.
 
 ## Indexing & Integrity Constraints
 

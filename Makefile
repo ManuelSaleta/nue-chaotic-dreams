@@ -27,8 +27,8 @@ web: ## Start Angular 22+ frontend natively ($root/web)
 
 api: ## Start .NET 10 Modular-Monolith API natively ($root/api)
 	@echo "Starting .NET 10 Modular-Monolith API natively..."
-	@if [ -d "api/src/PersonalSite.Api" ]; then \
-		dotnet watch --project api/src/PersonalSite.Api; \
+	@if [ -d "api/src/NueChaoticDreams.Api" ]; then \
+		dotnet watch --project api/src/NueChaoticDreams.Api; \
 	elif [ -d "api" ] && ls api/*.sln 1> /dev/null 2>&1; then \
 		dotnet watch --project api; \
 	else \
@@ -48,7 +48,7 @@ db: ## Start local PostgreSQL 17 instance
 dev: ## Start full stack natively (db + api + web)
 	@echo "Starting full stack natively (db + api + web)..."
 	@$(MAKE) db
-	@if [ -d "api/src/PersonalSite.Api" ]; then \
+	@if [ -d "api/src/NueChaoticDreams.Api" ]; then \
 		$(MAKE) -j 2 api web; \
 	else \
 		$(MAKE) web; \
@@ -86,7 +86,7 @@ docker-down: ## Stop running Docker Compose containers (preserves volumes)
 docker-db-nuke: ## Destroy only the PostgreSQL container & data volume, then restart clean db
 	docker compose stop db
 	docker compose rm -f -v db
-	docker volume rm -f postgres_data personal-site_postgres_data 2>/dev/null || true
+	docker volume rm -f postgres_data nue-chaotic-dreams_postgres_data personal-site_postgres_data 2>/dev/null || true
 	docker compose up -d db
 
 docker-nuke: ## Destroy all project containers, volumes, networks, local images & orphans
@@ -98,8 +98,8 @@ docker-nuke: ## Destroy all project containers, volumes, networks, local images 
 
 openapi-regen: ## Build .NET 10 OpenAPI 3.1 spec (api/openapi/v1.json) & regenerate Angular TypeScript client
 	@echo "Generating OpenAPI 3.1 spec and Angular client..."
-	@if [ -d "api/src/PersonalSite.Api" ]; then \
-		dotnet build api/src/PersonalSite.Api; \
+	@if [ -d "api/src/NueChaoticDreams.Api" ]; then \
+		dotnet build api/src/NueChaoticDreams.Api; \
 	else \
 		echo "api/ not yet scaffolded (pending Part 2.3 #40)."; \
 	fi

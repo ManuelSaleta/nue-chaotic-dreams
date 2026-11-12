@@ -5,7 +5,7 @@
 >
 > - **Monorepo Layout**: The repository is structured as a **Monorepo Modular-Monolith** with two primary top-level application directories at `$root` (alongside root documentation `README.md`, `plan.md`, `design.md`, `AGENTS.md`, `Makefile`, and `compose.yaml`):
 >   - **`$root/web/`**: The **Angular 22+ (Zoneless, Signals-first, Standalone)** frontend workspace, Storybook (`@storybook/angular`), Shared UI Component Library (`@ui`), and single global stylesheet (`web/src/styles/styles.scss`).
->   - **`$root/api/`**: The **100% Self-Owned .NET 10 Modular Monolith** (`PersonalSite.slnx` / `PersonalSite.sln`) organized by domain modules (`Resume`, `Poems`, `Books`, `Store`, `Identity/Admin`) over **Entity Framework Core 10 + PostgreSQL**.
+>   - **`$root/api/`**: The **100% Self-Owned .NET 10 Modular Monolith** (`NueChaoticDreams.slnx` / `NueChaoticDreams.sln`) organized by domain modules (`Resume`, `Poems`, `Books`, `Store`, `Identity/Admin`) over **Entity Framework Core 10 + PostgreSQL**.
 > - **Part 1 (First Priority — `$root/web/`)**: Port the existing Vue 3 + Vuetify 3 frontend into `$root/web/` using **Modern Angular 22+**, a **Shared UI Component Library (`@ui`)** wrapping Angular Material (M3) components, a **single [`web/src/styles/styles.scss`](web/src/styles/styles.scss) file**, the **Store Tab (`/store`) UI**, and **Storybook (`@storybook/angular`)** per [`design.md`](design.md).
 > - **Part 2 (Second Priority — `$root/api/`)**: Build the **100% Self-Owned Modern .NET 10 Modular-Monolith Minimal API + Entity Framework Core 10 + PostgreSQL** backend in `$root/api/`—including our hand-rolled **Shopping Cart & Coupon Engine**, **In-House Tax & PDF Invoice Generator**, **Direct Stripe Payment Processing (zero SaaS add-on fees)**, **PostgreSQL Outbox + SMTP/MailKit Email Fulfillment Worker**, **On-the-Fly Buyer PDF Watermarking & Self-Hosted Storage Vault**, **Store Admin Catalog API**, **OpenAPI 3.1** codegen (`openapi/v1.json` consumed by `web/`), and root **Prettier + ESLint + Husky** pre-commit hooks.
 
@@ -40,18 +40,18 @@ $root/
 ├── api/                                    # .NET 10 Modular-Monolith Backend
 │   ├── Dockerfile                          # Multi-stage .NET 10 SDK/Runtime Dockerfile (dev hot-reload + prod chiseled)
 │   ├── .dockerignore
-│   ├── PersonalSite.sln                    # Solution file at $root/api/
+│   ├── NueChaoticDreams.sln                # Solution file at $root/api/
 │   ├── Directory.Build.props               # Shared .NET 10 strict compiler & analyzer settings
 │   ├── openapi/
 │   │   └── v1.json                         # Build-time generated OpenAPI 3.1 contract
 │   ├── src/
-│   │   ├── PersonalSite.Api/               # Host, Minimal API bootstrap, Scalar, OpenAPI, Middleware
+│   │   ├── NueChaoticDreams.Api/           # Host, Minimal API bootstrap, Scalar, OpenAPI, Middleware
 │   │   └── Modules/                        # Modular-Monolith vertical slices (or namespaces/assemblies)
 │   │       ├── Portfolio/                  # Resume (Experience, Skills), Poems, Books endpoints & EF configs
 │   │       ├── Store/                      # e-Goods Catalog, Cart, Coupons, Tax, Invoices, Stripe, Vault
 │   │       └── Fulfillment/                # Transactional Outbox, MailKit SMTP Worker, PDF Watermarker
 │   └── tests/
-│       └── PersonalSite.Api.Tests/         # xUnit / WebApplicationFactory integration tests
+│       └── NueChaoticDreams.Api.Tests/     # xUnit / WebApplicationFactory integration tests
 ├── .agents/rules/                          # Antigravity workspace rules (always_on)
 │   ├── angular-best-practices.md           # Angular 22+, TypeScript 6+, @ui & single styles.scss rules
 │   ├── dot-net-best-practices.md           # .NET 10, C# 14, Modular-Monolith Minimal API & OpenAPI rules
@@ -133,14 +133,14 @@ Feature and page components **never import `@angular/material/*` directly**. All
 
 ### 3.1 Economic & Engineering Comparison
 
-| Dimension                         | SaaS Website Builders (Squarespace / Shopify)          | Third-Party Managed Add-ons (Stripe Tax + Invoicing + SaaS Email/DRM) | **Our Selected Architecture: 100% Hand-Rolled `.NET 10 + PostgreSQL` Services**                                                                                                                                                                               |
-| :-------------------------------- | :----------------------------------------------------- | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Fixed Monthly Cost**            | **$23–$65/mo** ($276–$780/yr)                          | **$20–$50/mo** across email/storage/DRM add-ons                       | **$0/mo** (runs on our existing self-hosted K3s / container stack)                                                                                                                                                                                            |
-| **Per-Order Surcharges**          | Up to **9% digital product fee** + Stripe 2.9% + $0.30 | **+0.5%** Stripe Tax + **+0.4%** Stripe Invoicing + per-PDF DRM fees  | **0% platform or add-on surcharges** (only base payment rail fee)                                                                                                                                                                                             |
-| **Cart, Promo Codes & Invoicing** | Locked to higher-tier plans                            | Paid per-invoice / per-calculation                                    | **100% Owned (`Part 2.7` — [#46](https://github.com/ManuelSaleta/personal-site/issues/46))**: In-house `Coupon` engine, `ITaxCalculationService`, and `.NET 10` PDF Invoice generator                                                                         |
-| **Email & Order Fulfillment**     | Basic generic emails                                   | Paid transactional SaaS (SendGrid/Postmark tiers)                     | **100% Owned (`Part 2.8` — [#47](https://github.com/ManuelSaleta/personal-site/issues/47))**: PostgreSQL `OutboxMessage` + `.NET 10 BackgroundService` + `MailKit` SMTP                                                                                       |
-| **e-Goods Vault & Anti-Piracy**   | Basic 24h link; no watermarking                        | Expensive third-party DRM                                             | **100% Owned (`Part 2.5` & `2.9` — [#44](https://github.com/ManuelSaleta/personal-site/issues/44), [#48](https://github.com/ManuelSaleta/personal-site/issues/48))**: Private local/MinIO vault + SHA-256 expiring tokens + on-the-fly buyer PDF watermarking |
-| **Catalog & Order Admin**         | External SaaS dashboard                                | External SaaS dashboard                                               | **100% Owned (`Part 2.10` — [#49](https://github.com/ManuelSaleta/personal-site/issues/49))**: Authenticated `/api/v1/admin/store/*` endpoints for uploading PDFs, managing prices, and reissuing entitlements                                                |
+| Dimension                         | SaaS Website Builders (Squarespace / Shopify)          | Third-Party Managed Add-ons (Stripe Tax + Invoicing + SaaS Email/DRM) | **Our Selected Architecture: 100% Hand-Rolled `.NET 10 + PostgreSQL` Services**                                                                                                                                                                                         |
+| :-------------------------------- | :----------------------------------------------------- | :-------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Fixed Monthly Cost**            | **$23–$65/mo** ($276–$780/yr)                          | **$20–$50/mo** across email/storage/DRM add-ons                       | **$0/mo** (runs on our existing self-hosted K3s / container stack)                                                                                                                                                                                                      |
+| **Per-Order Surcharges**          | Up to **9% digital product fee** + Stripe 2.9% + $0.30 | **+0.5%** Stripe Tax + **+0.4%** Stripe Invoicing + per-PDF DRM fees  | **0% platform or add-on surcharges** (only base payment rail fee)                                                                                                                                                                                                       |
+| **Cart, Promo Codes & Invoicing** | Locked to higher-tier plans                            | Paid per-invoice / per-calculation                                    | **100% Owned (`Part 2.7` — [#46](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/46))**: In-house `Coupon` engine, `ITaxCalculationService`, and `.NET 10` PDF Invoice generator                                                                              |
+| **Email & Order Fulfillment**     | Basic generic emails                                   | Paid transactional SaaS (SendGrid/Postmark tiers)                     | **100% Owned (`Part 2.8` — [#47](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/47))**: PostgreSQL `OutboxMessage` + `.NET 10 BackgroundService` + `MailKit` SMTP                                                                                            |
+| **e-Goods Vault & Anti-Piracy**   | Basic 24h link; no watermarking                        | Expensive third-party DRM                                             | **100% Owned (`Part 2.5` & `2.9` — [#44](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/44), [#48](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/48))**: Private local/MinIO vault + SHA-256 expiring tokens + on-the-fly buyer PDF watermarking |
+| **Catalog & Order Admin**         | External SaaS dashboard                                | External SaaS dashboard                                               | **100% Owned (`Part 2.10` — [#49](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/49))**: Authenticated `/api/v1/admin/store/*` endpoints for uploading PDFs, managing prices, and reissuing entitlements                                                     |
 
 ---
 
@@ -197,26 +197,26 @@ sequenceDiagram
 
 ### 4.2 Complete GitHub Issue Backlog & Dependency Map
 
-#### Part 1 Epic: [#30 — Angular 22+ & Angular Material (M3) Frontend Port](https://github.com/ManuelSaleta/personal-site/issues/30)
+#### Part 1 Epic: [#30 — Angular 22+ & Angular Material (M3) Frontend Port](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/30)
 
-- **[#31](https://github.com/ManuelSaleta/personal-site/issues/31)**: `Part 1.1: Setup Angular 22+ Zoneless Workspace, Build Config & Strict TypeScript`
-- **[#32](https://github.com/ManuelSaleta/personal-site/issues/32)**: `Part 1.2: Consolidate Single Global M3 Stylesheet (styles.scss) & Signal ThemeService` _(Blocked by #31)_
-- **[#33](https://github.com/ManuelSaleta/personal-site/issues/33)**: `Part 1.3: Build Shared UI Component Library (@ui) Wrapping Angular Material (M3)` _(Blocked by #31, #32)_
-- **[#42](https://github.com/ManuelSaleta/personal-site/issues/42)**: `Part 1.3b: Setup Storybook (@storybook/angular) & CSF 3 Stories with Light/Dark Theme Switching` _(Blocked by #32, #33)_
-- **[#34](https://github.com/ManuelSaleta/personal-site/issues/34)**: `Part 1.4: Port App Shell, Ambient Topographic Background, Navigation & Core Signal Services` _(Blocked by #31, #32, #33)_
-- **[#35](https://github.com/ManuelSaleta/personal-site/issues/35)**: `Part 1.5: Port Resume Feature Components, Horizontal Career Timeline & Secondary Pages` _(Blocked by #33, #34)_
-- **[#43](https://github.com/ManuelSaleta/personal-site/issues/43)**: `Part 1.5b: Build e-Goods Store Tab (/store), UiProductCard (@ui) & Post-Purchase Fulfillment UI` _(Blocked by #33, #34)_
-- **[#36](https://github.com/ManuelSaleta/personal-site/issues/36)**: `Part 1.6: Add Vitest Unit Tests & Verify Production Build for Angular 22+ Frontend` _(Blocked by #34, #35)_
+- **[#31](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/31)**: `Part 1.1: Setup Angular 22+ Zoneless Workspace, Build Config & Strict TypeScript`
+- **[#32](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/32)**: `Part 1.2: Consolidate Single Global M3 Stylesheet (styles.scss) & Signal ThemeService` _(Blocked by #31)_
+- **[#33](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/33)**: `Part 1.3: Build Shared UI Component Library (@ui) Wrapping Angular Material (M3)` _(Blocked by #31, #32)_
+- **[#42](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/42)**: `Part 1.3b: Setup Storybook (@storybook/angular) & CSF 3 Stories with Light/Dark Theme Switching` _(Blocked by #32, #33)_
+- **[#34](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/34)**: `Part 1.4: Port App Shell, Ambient Topographic Background, Navigation & Core Signal Services` _(Blocked by #31, #32, #33)_
+- **[#35](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/35)**: `Part 1.5: Port Resume Feature Components, Horizontal Career Timeline & Secondary Pages` _(Blocked by #33, #34)_
+- **[#43](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/43)**: `Part 1.5b: Build e-Goods Store Tab (/store), UiProductCard (@ui) & Post-Purchase Fulfillment UI` _(Blocked by #33, #34)_
+- **[#36](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/36)**: `Part 1.6: Add Vitest Unit Tests & Verify Production Build for Angular 22+ Frontend` _(Blocked by #34, #35)_
 
-#### Part 2 Epic: [#37 — .NET 10 Minimal API, EF Core 10 (PostgreSQL), OpenAPI 3.1, Hand-Rolled Store & Husky](https://github.com/ManuelSaleta/personal-site/issues/37)
+#### Part 2 Epic: [#37 — .NET 10 Minimal API, EF Core 10 (PostgreSQL), OpenAPI 3.1, Hand-Rolled Store & Husky](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/37)
 
-- **[#38](https://github.com/ManuelSaleta/personal-site/issues/38)**: `Part 2.1: Configure Prettier, Angular ESLint Flat Config & Husky + lint-staged Pre-Commit Hooks` _(Blocked by #30, #31)_
-- **[#39](https://github.com/ManuelSaleta/personal-site/issues/39)**: `Part 2.2: Scaffold .NET 10 Minimal API Solution, EF Core 10 PostgreSQL DbContext, Migrations & Seeding` _(Blocked by #30)_
-- **[#40](https://github.com/ManuelSaleta/personal-site/issues/40)**: `Part 2.3: Implement Minimal API Endpoints (Resume, Poems, Books, Health) & Build-Time OpenAPI 3.1 Spec` _(Blocked by #39)_
-- **[#44](https://github.com/ManuelSaleta/personal-site/issues/44)**: `Part 2.5: Design & Implement Backend Digital Goods (e-Goods / Paid PDF) Vault & Signed Download Service` _(Blocked by #39)_
-- **[#46](https://github.com/ManuelSaleta/personal-site/issues/46)**: `Part 2.7: Implement Hand-Rolled Shopping Cart, Coupon/Discount Engine & PDF Invoice Generator` _(Blocked by #39, #44)_
-- **[#45](https://github.com/ManuelSaleta/personal-site/issues/45)**: `Part 2.6: Implement Direct Stripe PaymentIntent/Checkout Integration & Idempotent Webhooks (Zero SaaS Add-on Fees)` _(Blocked by #40, #43, #44, #46)_
-- **[#47](https://github.com/ManuelSaleta/personal-site/issues/47)**: `Part 2.8: Implement Self-Hosted Transactional Email & PostgreSQL Outbox Fulfillment Worker` _(Blocked by #44, #45)_
-- **[#48](https://github.com/ManuelSaleta/personal-site/issues/48)**: `Part 2.9: Implement On-the-Fly Buyer PDF Watermarking & Self-Hosted e-Goods Storage Vault` _(Blocked by #44)_
-- **[#49](https://github.com/ManuelSaleta/personal-site/issues/49)**: `Part 2.10: Build Self-Hosted Store Admin Endpoints & Catalog Upload Manager (Zero External CMS)` _(Blocked by #40, #44)_
-- **[#41](https://github.com/ManuelSaleta/personal-site/issues/41)**: `Part 2.4: Integrate OpenAPI TypeScript Codegen (@hey-api/openapi-ts) with Angular httpResource() Services` _(Blocked by #35, #40, #45)_
+- **[#38](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/38)**: `Part 2.1: Configure Prettier, Angular ESLint Flat Config & Husky + lint-staged Pre-Commit Hooks` _(Blocked by #30, #31)_
+- **[#39](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/39)**: `Part 2.2: Scaffold .NET 10 Minimal API Solution, EF Core 10 PostgreSQL DbContext, Migrations & Seeding` _(Blocked by #30)_
+- **[#40](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/40)**: `Part 2.3: Implement Minimal API Endpoints (Resume, Poems, Books, Health) & Build-Time OpenAPI 3.1 Spec` _(Blocked by #39)_
+- **[#44](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/44)**: `Part 2.5: Design & Implement Backend Digital Goods (e-Goods / Paid PDF) Vault & Signed Download Service` _(Blocked by #39)_
+- **[#46](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/46)**: `Part 2.7: Implement Hand-Rolled Shopping Cart, Coupon/Discount Engine & PDF Invoice Generator` _(Blocked by #39, #44)_
+- **[#45](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/45)**: `Part 2.6: Implement Direct Stripe PaymentIntent/Checkout Integration & Idempotent Webhooks (Zero SaaS Add-on Fees)` _(Blocked by #40, #43, #44, #46)_
+- **[#47](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/47)**: `Part 2.8: Implement Self-Hosted Transactional Email & PostgreSQL Outbox Fulfillment Worker` _(Blocked by #44, #45)_
+- **[#48](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/48)**: `Part 2.9: Implement On-the-Fly Buyer PDF Watermarking & Self-Hosted e-Goods Storage Vault` _(Blocked by #44)_
+- **[#49](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/49)**: `Part 2.10: Build Self-Hosted Store Admin Endpoints & Catalog Upload Manager (Zero External CMS)` _(Blocked by #40, #44)_
+- **[#41](https://github.com/ManuelSaleta/nue-chaotic-dreams/issues/41)**: `Part 2.4: Integrate OpenAPI TypeScript Codegen (@hey-api/openapi-ts) with Angular httpResource() Services` _(Blocked by #35, #40, #45)_

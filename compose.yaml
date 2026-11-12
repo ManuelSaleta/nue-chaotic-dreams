@@ -1,10 +1,10 @@
 services:
   db:
     image: postgres:17-alpine
-    container_name: personal-site-db
+    container_name: nue-chaotic-dreams-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-personalsite}
+      POSTGRES_DB: ${POSTGRES_DB:-nue_chaotic_dreams}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
@@ -13,7 +13,10 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
-        ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-personalsite}']
+        [
+          'CMD-SHELL',
+          'pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-nue_chaotic_dreams}',
+        ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -21,7 +24,7 @@ services:
 
   mailpit:
     image: axllent/mailpit:latest
-    container_name: personal-site-mailpit
+    container_name: nue-chaotic-dreams-mailpit
     restart: unless-stopped
     ports:
       - '1025:1025'
@@ -32,7 +35,7 @@ services:
       context: ./web
       dockerfile: Dockerfile
       target: dev
-    container_name: personal-site-web
+    container_name: nue-chaotic-dreams-web
     restart: unless-stopped
     ports:
       - '4200:4200'
@@ -50,14 +53,14 @@ services:
       context: ./api
       dockerfile: Dockerfile
       target: dev
-    container_name: personal-site-api
+    container_name: nue-chaotic-dreams-api
     restart: unless-stopped
     ports:
       - '5000:5000'
       - '8080:8080'
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB:-personalsite};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=${POSTGRES_DB:-nue_chaotic_dreams};Username=${POSTGRES_USER:-postgres};Password=${POSTGRES_PASSWORD:-postgres}
     depends_on:
       db:
         condition: service_healthy
